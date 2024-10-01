@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>pistON - Recherche d'emploi</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='piston-logo.ico') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="logo-title-wrapper">
+                <div class="logo">
+                    <img src="{{ url_for('static', filename='piston-logo.png') }}" alt="pistON Logo">
+                </div>
+                <h1>pistON - Le turbo de votre carrière</h1>
+            </div>
+        </div>
+    </header>
+
+    <div class="mode-toggle">
+        <input type="checkbox" id="modeToggle">
+        <label for="modeToggle"></label>
+    </div>
+
+    <main class="container">
+        <div class="search-filter">
+            <input type="text" id="search" placeholder="Rechercher...">
+            <select id="filter">
+                <option value="">Tous les sites</option>
+                {% for website in websites %}
+                <option value="{{ website['name'] }}">{{ website['name'] }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <form id="addCustomWebsiteForm">
+            <input type="text" id="customWebsiteName" placeholder="Nom du Site">
+            <input type="text" id="customWebsiteUrl" placeholder="URL du Site">
+            <button type="submit">Ajouter un Site</button>
+        </form>
+
+        <table id="jobTable">
+            <thead>
+                <tr>
+                    <th>Nom du Site</th>
+                    <th>URL</th>
+                    <th>Type de Site</th>
+                    <th>Méthode de Parsing</th>
+                    <th>Nombre d'Offres</th>
+                    <th>Dernière Vérification</th>
+                    <th>Dernière Mise à Jour</th>
+                    <th>Intervalle de Scan</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for website in websites %}
+                <tr data-website-id="{{ website['id'] }}" data-is-plugin="{{ not website['is_ui_generated'] }}" class="dark-mode">
+                    <td data-label="Nom du Site">{{ website['name'] }}</td>
+                    <td data-label="URL">{{ website['url'] }}</td>
+                    <td data-label="Type de Site" class="type-column">
+                        {{ 'Plugin' if not website['is_ui_generated'] else 'Ajouté par l\'utilisateur' }}
+                    </td>
+                    <td data-label="Méthode de Parsing" class="parsing-method-column">
+                        {{ 'Parser spécifique' if not website['is_ui_generated'] else 'Changement de hash' }}
+                    </td>
+                    <td data-label="Nombre d'Offres">
+                        {{ '/' if website['is_ui_generated'] else website['last_link_count'] or 'Pas encore vérifié' }}
+                    </td>
+                    <td data-label="Dernière Vérification">
+                        {{ website['last_checked'] or 'Pas encore vérifié' }}
+                    </td>
+                    <td data-label="Dernière Mise à Jour">
+                        {{ website['last_updated'] or 'Jamais' }}
+                    </td>
+                    <td data-label="Intervalle de Scan">
+                        <select class="interval-select">
+                            <option value="never" {% if website['scrape_interval']=='never' %}selected{% endif %}>Jamais</option>
+                            <option value="5min" {% if website['scrape_interval']=='5min' %}selected{% endif %}>5 minutes</option>
+                            <option value="30min" {% if website['scrape_interval']=='30min' %}selected{% endif %}>30 minutes</option>
+                            <option value="1hour" {% if website['scrape_interval']=='1hour' %}selected{% endif %}>1 heure</option>
+                            <option value="2hours" {% if website['scrape_interval']=='2hours' %}selected{% endif %}>2 heures</option>
+                            <option value="12hours" {% if website['scrape_interval']=='12hours' %}selected{% endif %}>12 heures</option>
+                            <option value="1day" {% if website['scrape_interval']=='1day' %}selected{% endif %}>1 jour</option>
+                            <option value="1week" {% if website['scrape_interval']=='1week' %}selected{% endif %}>1 semaine</option>
+                        </select>
+                    </td>
+                    <td data-label="Actions">
+                        <div class="action-buttons">
+                            <button class="manual-scrape-btn">Scanner Maintenant</button>
+                            {% if website['is_ui_generated'] %}
+                            <button class="delete-website-btn">Supprimer</button>
+                            {% endif %}
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </main>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>

@@ -1,0 +1,10 @@
+version: '3'
+services:
+  flask_app:
+    build: .
+    ports:
+      - "5000:5000"
+    environment:
+      EMAIL_ADDRESS: #your email address
+      EMAIL_PASSWORD: #your email password
+      RECIPIENT_EMAIL: # the email you want to send to

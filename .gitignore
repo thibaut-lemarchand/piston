@@ -1,0 +1,6 @@
+.env
+*.pyc
+*.db
+.vscode/*
+z_*
+custom_*.py

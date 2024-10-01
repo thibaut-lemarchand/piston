@@ -1,0 +1,345 @@
+:root {
+    --primary-color: #3498db;
+    --secondary-color: #2ecc71;
+    --background-color: #f5f7fa;
+    --text-color: #34495e;
+    --white: #fff;
+    --light-gray: #f5f5f5;
+    --border-color: #e0e0e0;
+    --box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+    --dark-background-color: #2c3e50;
+    --dark-text-color: #ecf0f1;
+    --dark-primary-color: #2980b9;
+    --dark-secondary-color: #27ae60;
+    --dark-border-color: #34495e;
+    --dark-table-background: #34495e;
+    --dark-table-hover: #2c3e50;
+}
+
+/* Base Styles */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: var(--background-color);
+    color: var(--text-color);
+    transition: background-color 0.3s, color 0.3s;
+}
+
+body.dark-mode {
+    background-color: var(--dark-background-color);
+    color: var(--dark-text-color);
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+/* Header Styles */
+header {
+    background-color: var(--primary-color);
+    color: var(--white);
+    padding: 20px 0;
+    text-align: center;
+    transition: background-color 0.3s;
+}
+
+header.dark-mode {
+    background-color: var(--dark-primary-color);
+}
+
+.logo-title-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.logo {
+    width: 60px;
+    height: 60px;
+    background-color: #000;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-right: 15px;
+}
+
+.logo img {
+    width: 40px;
+    height: auto;
+}
+
+h1 {
+    margin: 0;
+    font-size: 2.5em;
+    display: inline-block;
+    vertical-align: middle;
+}
+
+/* Search and Filter Styles */
+.search-filter {
+    margin: 20px 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+input[type="text"],
+select {
+    padding: 10px;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    background-color: var(--white);
+    color: var(--text-color);
+    transition: border-color 0.3s, background-color 0.3s, color 0.3s;
+}
+
+.dark-mode input[type="text"],
+.dark-mode select {
+    border-color: var(--dark-border-color);
+    background-color: var(--dark-background-color);
+    color: var(--dark-text-color);
+}
+
+/* Table Styles */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: var(--white);
+    box-shadow: var(--box-shadow);
+    margin-top: 20px;
+    transition: background-color 0.3s;
+}
+
+table.dark-mode {
+    background-color: var(--dark-table-background);
+}
+
+th,
+td {
+    padding: 15px;
+    text-align: left;
+    border-bottom: 1px solid var(--border-color);
+    transition: border-color 0.3s, background-color 0.3s;
+}
+
+.dark-mode th,
+.dark-mode td {
+    border-color: var(--dark-border-color);
+}
+
+th {
+    background-color: var(--primary-color);
+    color: var(--white);
+    font-weight: bold;
+    transition: background-color 0.3s;
+}
+
+.dark-mode th {
+    background-color: var(--dark-primary-color);
+}
+
+tr:hover {
+    background-color: var(--light-gray);
+    transition: background-color 0.3s;
+}
+
+.dark-mode tr:hover {
+    background-color: var(--dark-table-hover);
+}
+
+/* Form Element Styles */
+select,
+button {
+    padding: 8px 12px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+select {
+    background-color: var(--light-gray);
+    color: var(--text-color);
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.dark-mode select {
+    background-color: var(--dark-border-color);
+    color: var(--dark-text-color);
+}
+
+select:hover {
+    background-color: var(--border-color);
+}
+
+.dark-mode select:hover {
+    background-color: var(--dark-primary-color);
+}
+
+button {
+    background-color: var(--secondary-color);
+    color: var(--white);
+    font-weight: bold;
+    transition: background-color 0.3s;
+}
+
+.dark-mode button {
+    background-color: var(--dark-secondary-color);
+}
+
+button:hover {
+    background-color: #27ae60;
+}
+
+.dark-mode button:hover {
+    background-color: #219a52;
+}
+
+/* New Column Styles */
+.type-column,
+.parsing-method-column {
+    font-style: italic;
+    color: #666;
+    transition: color 0.3s;
+}
+
+.dark-mode .type-column,
+.dark-mode .parsing-method-column {
+    color: #95a5a6;
+}
+
+/* Plugin Row Highlight */
+tr[data-is-plugin="true"] {
+    background-color: #f0f8ff;
+    transition: background-color 0.3s;
+}
+
+.dark-mode tr[data-is-plugin="true"] {
+    background-color: #34495e;
+}
+
+/* Light/Dark Mode Toggle */
+.mode-toggle {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+}
+
+.mode-toggle input[type="checkbox"] {
+    display: none;
+}
+
+.mode-toggle label {
+    width: 60px;
+    height: 30px;
+    background-color: #ccc;
+    border-radius: 15px;
+    position: relative;
+    transition: background-color 0.3s;
+    display: flex;
+    align-items: center;
+    padding: 0 5px;
+}
+
+.mode-toggle label:before {
+    content: '\f185'; /* Sun icon */
+    font-family: 'Font Awesome 5 Free';
+    font-weight: 900;
+    position: absolute;
+    width: 24px;
+    height: 24px;
+    background-color: white;
+    border-radius: 50%;
+    top: 3px;
+    left: 3px;
+    transition: transform 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #f1c40f;
+}
+
+.mode-toggle input:checked + label:before {
+    transform: translateX(30px);
+    content: '\f186'; /* Moon icon */
+    color: #34495e;
+}
+
+/* New styles for action buttons */
+.action-buttons {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.action-buttons button {
+    flex: 1;
+    min-width: 120px;
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+    .logo-title-wrapper {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .logo {
+        margin-bottom: 10px;
+    }
+
+    .search-filter {
+        flex-direction: column;
+    }
+
+    .search-filter > * {
+        margin-bottom: 10px;
+        width: 100%;
+    }
+
+    table, tr, td {
+        display: block;
+    }
+
+    tr {
+        margin-bottom: 20px;
+        border: 1px solid var(--border-color);
+    }
+
+    .dark-mode tr {
+        border-color: var(--dark-border-color);
+    }
+
+    td {
+        border: none;
+        position: relative;
+        padding-left: 50%;
+        text-align: right;
+    }
+
+    td:before {
+        content: attr(data-label);
+        position: absolute;
+        left: 6px;
+        width: 45%;
+        padding-right: 10px;
+        white-space: nowrap;
+        font-weight: bold;
+        text-align: left;
+    }
+
+    .action-buttons {
+        flex-direction: column;
+    }
+    
+    .action-buttons button {
+        width: 100%;
+    }
+}
