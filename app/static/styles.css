@@ -267,7 +267,7 @@ tr[data-is-plugin="true"] {
 }
 
 .mode-toggle input:checked + label:before {
-    transform: translateX(30px);
+    transform: translateX(40px);
     content: '\f186'; /* Moon icon */
     color: #34495e;
 }
