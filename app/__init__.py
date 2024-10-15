@@ -7,9 +7,15 @@ load_dotenv()
 
 db = SQLAlchemy()
 
-def create_app():
+def create_app(config=None):
     app = Flask(__name__)
-    app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///websites.db"
+    
+    # If config is provided, update the app config with it
+    if config:
+        app.config.update(config)
+    else:
+        app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///websites.db"
+    
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
     app.config["PORT"] = int(os.getenv("PORT", 5000))
     app.config["EMAIL_ADDRESS"] = os.getenv("EMAIL_ADDRESS")

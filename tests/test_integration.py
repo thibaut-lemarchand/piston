@@ -6,6 +6,7 @@ import pytest
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 from app import create_app, db
+from app.models import Website
 
 @pytest.fixture(scope="module")
 def test_app():
@@ -24,10 +25,26 @@ def test_app():
 
 @pytest.fixture
 def client():
-    app = create_app()  # Create the app within the fixture
-    app.config["TESTING"] = True
-    with app.test_client() as client:
-        yield client
+    app = create_app({'TESTING': True, 'SQLALCHEMY_DATABASE_URI': 'sqlite:///:memory:'})
+
+    with app.app_context():
+        db.create_all()  # Create all tables
+        # Add test data
+        test_website = Website(
+            id=1,  # Set the ID that you expect to test with
+            name="Test Website",
+            url="http://test.com",
+            plugin_name="default",
+            is_enabled=True,
+            scrape_interval="daily"
+        )
+        db.session.add(test_website)
+        db.session.commit()  # Commit the test data
+        
+        yield app.test_client()  # Yield the test client for use in tests
+
+        db.session.remove()  # Clean up session after tests
+        db.drop_all()  # Drop all tables after tests
 
 
 def test_index(client):
