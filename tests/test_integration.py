@@ -5,8 +5,22 @@ import pytest
 # Add the root directory to the Python path
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
-from app import create_app  # Corrected import
+from app import create_app, db
 
+@pytest.fixture(scope="module")
+def test_app():
+    app = create_app()
+    app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///:memory:"  # In-memory database for testing
+    app.config["TESTING"] = True
+
+    with app.app_context():
+        db.create_all()  # Create the database tables
+
+    yield app
+
+    # Teardown (after tests run)
+    with app.app_context():
+        db.drop_all()
 
 @pytest.fixture
 def client():

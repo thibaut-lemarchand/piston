@@ -79,7 +79,7 @@ def get_websites():
     return websites
 
 def toggle_website(id):
-    website = Website.query.get(id)
+    website = db.session.get(Website, id)
     if website:
         website.is_enabled = not website.is_enabled
         db.session.commit()
@@ -88,12 +88,12 @@ def toggle_website(id):
 def manual_scrape(id):
     try:
         if id.startswith("custom_"):
-            website = CustomWebsite.query.get(id.split("_")[1])
+            website = db.session.get(CustomWebsite, id.split("_")[1])
             if website:
                 url = website.url
                 plugin_name = f"custom_{website.name.replace(' ', '_')}"
         else:
-            website = Website.query.get(id)
+            website = db.session.get(Website, id)
             if website:
                 url = website.url
                 plugin_name = website.plugin_name
@@ -152,9 +152,9 @@ def manual_scrape(id):
 
 def update_interval(id, interval):
     if id.startswith("custom_"):
-        website = CustomWebsite.query.get(id.split("_")[1])
+        website = db.session.get(CustomWebsite, id.split("_")[1])
     else:
-        website = Website.query.get(id)
+        website = db.session.get(Website, id)
     
     if website:
         website.scrape_interval = interval
@@ -257,7 +257,7 @@ def check_custom_updates():
 
 def delete_custom_website(id):
     if id.startswith("custom_"):
-        custom_website = CustomWebsite.query.get(id.split("_")[1])
+        custom_website = db.session.get(CustomWebsite, id.split("_")[1])
         if custom_website and custom_website.is_ui_generated:
             db.session.delete(custom_website)
             db.session.commit()
