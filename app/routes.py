@@ -1,4 +1,6 @@
+import os
 from flask import Blueprint, render_template, redirect, url_for, jsonify, request
+from werkzeug.utils import secure_filename
 from .models import (
     get_websites,
     toggle_website,
@@ -6,6 +8,7 @@ from .models import (
     update_interval,
     add_custom_website,
     delete_custom_website,
+    add_uploaded_scraper,
 )
 
 app = Blueprint("routes", __name__)
@@ -54,3 +57,26 @@ def add_custom_website_route():
 def delete_custom_website_route(id):
     result = delete_custom_website(id)
     return jsonify({"result": result})
+
+@app.route("/upload_scraper", methods=["POST"])
+def upload_scraper():
+    if 'scraperFile' not in request.files:
+        return jsonify({"message": "No file part"}), 400
+    file = request.files['scraperFile']
+    if file.filename == '':
+        return jsonify({"message": "No selected file"}), 400
+    if file and file.filename.endswith('.py'):
+        filename = secure_filename(file.filename)
+        file_path = os.path.join('plugins', filename)
+        file.save(file_path)
+        
+        # Add the uploaded scraper to the database
+        result = add_uploaded_scraper(filename)
+        
+        if result:
+            return jsonify({"message": "Scraper uploaded successfully"}), 200
+        else:
+            os.remove(file_path)  # Remove the file if it couldn't be added to the database
+            return jsonify({"message": "Failed to add scraper to database"}), 500
+    else:
+        return jsonify({"message": "Invalid file type. Only .py files are allowed."}), 400

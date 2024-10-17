@@ -83,7 +83,6 @@ h1 {
 .search-filter {
     margin: 20px 0;
     display: flex;
-    justify-content: space-between;
     align-items: center;
 }
 
@@ -283,8 +282,80 @@ tr[data-is-plugin="true"] {
     flex: 1;
     min-width: 120px;
 }
+.top-controls {
+    display: flex;
+    justify-content: space-between; /* Ensures forms are spaced apart */
+    align-items: center; /* Aligns the forms vertically in the center */
+    margin-bottom: 20px;
+    flex-wrap: nowrap; /* Prevent wrapping */
+}
+
+.search-filter {
+    display: flex;
+    align-items: center;
+    margin: 5px 0;
+}
+
+.add-site, .upload-scraper {
+    display: flex;
+    gap: 10px; /* Adds space between inputs and buttons */
+    align-items: center;
+}
+
+.search-filter input, .search-filter select,
+.add-site input, .upload-scraper input {
+    margin-right: 10px;
+    padding: 5px 10px;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    background-color: var(--white);
+    color: var(--text-color);
+}
+
+.dark-mode .search-filter input, 
+.dark-mode .search-filter select,
+.dark-mode .add-site input, 
+.dark-mode .upload-scraper input {
+    background-color: var(--dark-background-color);
+    color: var(--dark-text-color);
+    border-color: var(--dark-border-color);
+}
+
+.add-site button, .upload-scraper button {
+    padding: 5px 10px;
+    background-color: var(--secondary-color);
+    color: var(--white);
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.dark-mode .add-site button, 
+.dark-mode .upload-scraper button {
+    background-color: var(--dark-secondary-color);
+}
+
+.add-site button:hover, .upload-scraper button:hover {
+    background-color: #27ae60;
+}
+
+.dark-mode .add-site button:hover, 
+.dark-mode .upload-scraper button:hover {
+    background-color: #219a52;
+}
 
 /* Responsive styles */
+@media (max-width: 1200px) {
+    .forms-container {
+        flex-direction: column;
+    }
+
+    .add-site, .upload-scraper {
+        width: 100%;
+        margin-bottom: 10px;
+    }
+}
+
 @media (max-width: 768px) {
     .logo-title-wrapper {
         flex-direction: column;
@@ -341,5 +412,29 @@ tr[data-is-plugin="true"] {
     
     .action-buttons button {
         width: 100%;
+    }
+    .top-controls, .search-filter, .add-site, .upload-scraper {
+        flex-direction: column;
+    }
+
+    .top-controls {
+        flex-direction: column;
+    }
+    
+    .search-filter, .upload-scraper {
+        width: 100%;
+        margin-bottom: 10px;
+    }
+    
+    .upload-scraper {
+        margin-left: 0;
+    }
+
+    .search-filter input, .search-filter select,
+    .add-site input, .upload-scraper input,
+    .add-site button, .upload-scraper button {
+        width: 100%;
+        margin-right: 0;
+        margin-bottom: 5px;
     }
 }

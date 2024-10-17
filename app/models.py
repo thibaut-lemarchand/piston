@@ -1,5 +1,6 @@
 import os
 import sqlite3
+import importlib.util
 from datetime import datetime
 import textwrap
 from sqlalchemy.exc import SQLAlchemyError
@@ -271,3 +272,31 @@ def delete_custom_website(id):
         elif custom_website:
             return "Cannot delete manually created plugin"
     return "Website not found"
+
+def add_uploaded_scraper(filename):
+    try:
+        # Load the module
+        module_name = filename[:-3]  # Remove .py extension
+        spec = importlib.util.spec_from_file_location(module_name, os.path.join('plugins', filename))
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+        
+        # Check if the required attributes exist
+        if not all(hasattr(module, attr) for attr in ['WEBSITE_NAME', 'WEBSITE_URL', 'scrape']):
+            raise AttributeError("The uploaded scraper is missing required attributes")
+        
+        # Add the website to the database
+        new_website = Website(
+            name=module.WEBSITE_NAME,
+            url=module.WEBSITE_URL,
+            plugin_name=module_name,
+            is_enabled=True,
+            scrape_interval='daily'
+        )
+        db.session.add(new_website)
+        db.session.commit()
+        return True
+    except Exception as e:
+        print(f"Error adding uploaded scraper: {e}")
+        db.session.rollback()
+        return False

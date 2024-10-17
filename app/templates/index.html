@@ -37,11 +37,18 @@
             </select>
         </div>
 
-        <form id="addCustomWebsiteForm">
-            <input type="text" id="customWebsiteName" placeholder="Nom du Site">
-            <input type="text" id="customWebsiteUrl" placeholder="URL du Site">
-            <button type="submit">Ajouter un Site</button>
-        </form>
+        <div class="top-controls">
+            <form id="addCustomWebsiteForm" class="add-site">
+                <input type="text" id="customWebsiteName" placeholder="Nom du Site">
+                <input type="text" id="customWebsiteUrl" placeholder="URL du Site">
+                <button type="submit">Ajouter un Site</button>
+            </form>
+        
+            <form id="uploadScraperForm" class="upload-scraper" enctype="multipart/form-data">
+                <input type="file" id="scraperFile" name="scraperFile" accept=".py">
+                <button type="submit">Upload Scraper</button>
+            </form>
+        </div>
 
         <table id="jobTable">
             <thead>

@@ -38,7 +38,8 @@ const CONFIG = {
     ADD_CUSTOM_WEBSITE: '/add_custom_website',
     DELETE_CUSTOM_WEBSITE: (id) => `/delete_custom_website/${id}`,
     MANUAL_SCRAPE: (id) => `/scrape/${id}`,
-    UPDATE_INTERVAL: (id) => `/update_interval/${id}`
+    UPDATE_INTERVAL: (id) => `/update_interval/${id}`,
+    UPLOAD_SCRAPER: '/upload_scraper'
   };
   
   // Utility Functions
@@ -151,6 +152,25 @@ const CONFIG = {
         const row = button.closest('tr');
         button.style.display = row.dataset.isPlugin === 'true' ? 'none' : 'inline-block';
       });
+    },
+    uploadScraper: async (event) => {
+      event.preventDefault();
+      const formData = new FormData(event.target);
+      try {
+        const response = await fetch(API.UPLOAD_SCRAPER, {
+          method: 'POST',
+          body: formData
+        });
+        const data = await response.json();
+        if (response.ok) {
+          toastr.success(data.message);
+          utils.reloadPage();
+        } else {
+          toastr.error(data.message);
+        }
+      } catch (error) {
+        utils.showError('An error occurred while uploading the scraper.');
+      }
     }
   };
   
@@ -163,6 +183,7 @@ const CONFIG = {
     DOM.intervalSelects().forEach(select => select.addEventListener('change', handlers.updateInterval));
     DOM.searchInput().addEventListener('input', handlers.filterTable);
     DOM.filterSelect().addEventListener('change', handlers.filterTable);
+    document.getElementById('uploadScraperForm').addEventListener('submit', handlers.uploadScraper);
   
     // Initialize toastr
     toastr.options = CONFIG.TOASTR_OPTIONS;
