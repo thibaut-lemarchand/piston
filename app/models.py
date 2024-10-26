@@ -291,7 +291,7 @@ def add_uploaded_scraper(filename):
             url=module.WEBSITE_URL,
             plugin_name=module_name,
             is_enabled=True,
-            scrape_interval='daily'
+            scrape_interval='never'
         )
         db.session.add(new_website)
         db.session.commit()
@@ -300,3 +300,19 @@ def add_uploaded_scraper(filename):
         print(f"Error adding uploaded scraper: {e}")
         db.session.rollback()
         return False
+
+def update_last_checked(id):
+    try:
+        if id.startswith("custom_"):
+            website = db.session.get(CustomWebsite, id.split("_")[1])
+        else:
+            website = db.session.get(Website, id)
+        
+        if website:
+            website.last_checked = datetime.now()
+            db.session.commit()
+            return True
+    except SQLAlchemyError as e:
+        db.session.rollback()
+        print(f"Error updating last checked time: {e}")
+    return False

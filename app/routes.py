@@ -1,4 +1,5 @@
 import os
+from datetime import datetime
 from flask import Blueprint, render_template, redirect, url_for, jsonify, request
 from werkzeug.utils import secure_filename
 from .models import (
@@ -31,6 +32,11 @@ def scrape(id):
     result = manual_scrape(id)
     return jsonify({"result": result})
 
+@app.route('/scrape/<id>')
+def manual_scrape_route(id):
+    result = manual_scrape(id)
+    current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    return jsonify({"result": result, "last_checked": current_time})
 
 @app.route("/update_interval/<path:id>", methods=["POST"])
 def update(id):

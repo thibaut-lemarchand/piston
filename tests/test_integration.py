@@ -36,7 +36,7 @@ def client():
             url="http://test.com",
             plugin_name="default",
             is_enabled=True,
-            scrape_interval="daily"
+            scrape_interval="never"
         )
         db.session.add(test_website)
         db.session.commit()  # Commit the test data

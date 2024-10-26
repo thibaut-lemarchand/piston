@@ -103,7 +103,25 @@ const CONFIG = {
       } catch (error) {
         utils.showError('Une erreur est survenue lors de la mise à jour de l\'intervalle.');
       }
-    }
+    },
+    manualScrape: async (id) => {
+      try {
+        const response = await fetch(API.MANUAL_SCRAPE(id));
+        const data = await response.json();
+        toastr.success(data.result);
+        
+        // Update the "Dernière vérification" field in the table
+        const row = document.querySelector(`tr[data-website-id="${id}"]`);
+        if (row) {
+          const lastCheckedCell = row.querySelector('td[data-label="Dernière Vérification"]');
+          if (lastCheckedCell) {
+            lastCheckedCell.textContent = data.last_checked;
+          }
+        }
+      } catch (error) {
+        utils.showError('Une erreur est survenue lors du scan.');
+      }
+    },
   };
   
   // Event Handlers
