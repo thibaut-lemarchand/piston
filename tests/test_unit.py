@@ -28,7 +28,7 @@ def test_scrape_website(plugin_name, expected_result):
     mock_plugin.scrape = MagicMock(return_value=expected_result)
 
     with patch(
-        "app.utils.load_plugins",
+        "piston.utils.load_plugins",
         return_value=({plugin_name: mock_plugin}, []),
     ):
         result = scrape_website("http://example.com", plugin_name)

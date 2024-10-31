@@ -37,7 +37,7 @@ def create_app(config=None):
 
     db.init_app(app)
 
-    from .routes import app as routes_blueprint
+    from piston.routes import app as routes_blueprint
 
     app.register_blueprint(routes_blueprint)
 
@@ -48,12 +48,12 @@ def init_db(app):
         db.create_all()
 
 def load_plugins():
-    from .utils import load_plugins as load_plugins_func
+    from piston.utils import load_plugins as load_plugins_func
 
     return load_plugins_func()
 
 def init_websites(app, websites_data):
-    from .models import Website
+    from piston.models import Website
     
     with app.app_context():
         if Website.query.count() == 0:

@@ -1,8 +1,8 @@
 from datetime import datetime, timedelta
-from .models import Website, CustomWebsite, check_updates, check_custom_updates, db
+from piston.models import Website, CustomWebsite, check_updates, check_custom_updates, db
 
 def init_scheduler(app, scheduler):
-    @scheduler.task('interval', id='check_all_updates', minutes=1)
+    @scheduler.task('interval', id='check_all_updates', seconds=30)
     def scheduled_check_all_updates():
         with app.app_context():
             print('Checking all sites for updates')
@@ -16,18 +16,21 @@ def check_all_websites():
     for website in websites + custom_websites:
         if should_scrape(website, now):
             if isinstance(website, Website):
+                print(f"Updating {website.name} ({website.scrape_interval})")
                 check_updates(website)
             else:
+                print(f"Updating custom {website.name} ({website.scrape_interval})")
                 check_custom_updates(website)
             website.last_checked = now
             db.session.commit()
 
 def should_scrape(website, now):
-    # if website.last_checked is None:
-    #     return True
+
+    if website.last_checked is None:
+        return True
     
     interval = website.scrape_interval
-    print(website.name, website.scrape_interval)
+    print(website.name, (now - website.last_checked))
 
     if interval == 'never':
         return False
@@ -36,8 +39,6 @@ def should_scrape(website, now):
     elif interval == 'hourly':
         return (now - website.last_checked) > timedelta(hours=1)
     elif interval == '5min':
-        print("update")
-        return (now - website.last_checked) > timedelta(minutes=1)
-    # Add more intervals as needed
+        return (now - website.last_checked) > timedelta(minutes=5)
     
     return False

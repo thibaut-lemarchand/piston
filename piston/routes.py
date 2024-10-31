@@ -2,7 +2,7 @@ import os
 from datetime import datetime
 from flask import Blueprint, render_template, redirect, url_for, jsonify, request
 from werkzeug.utils import secure_filename
-from .models import (
+from piston.models import (
     get_websites,
     toggle_website,
     manual_scrape,
