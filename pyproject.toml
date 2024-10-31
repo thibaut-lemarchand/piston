@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "job-search-v2"
+name = "piston"
 version = "0.1.0"
 description = ""
 authors = ["Thibaut Lemarchand <git@tlemarchand.com>"]

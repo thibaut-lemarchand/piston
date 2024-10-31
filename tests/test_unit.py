@@ -7,7 +7,7 @@ from flask import Flask
 # Add the root directory to the Python path
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
-from app.utils import scrape_website, send_email  # Corrected import
+from piston.utils import scrape_website, send_email  # Corrected import
 
 
 @pytest.mark.parametrize(

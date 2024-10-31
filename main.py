@@ -1,6 +1,6 @@
 from flask_apscheduler import APScheduler
-from app import create_app, init_db, load_plugins, init_websites
-from app.scheduler import init_scheduler
+from piston import create_app, init_db, load_plugins, init_websites
+from piston.scheduler import init_scheduler
 
 if __name__ == "__main__":
     app = create_app()
