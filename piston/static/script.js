@@ -37,7 +37,7 @@ const CONFIG = {
   const API = {
     ADD_CUSTOM_WEBSITE: '/add_custom_website',
     DELETE_CUSTOM_WEBSITE: (id) => `/delete_custom_website/${id}`,
-    MANUAL_SCRAPE: (id) => `/scrape/${id}`,
+    UPDATE_WEBSITE: (id) => `/scrape/${id}`,
     UPDATE_INTERVAL: (id) => `/update_interval/${id}`,
     UPLOAD_SCRAPER: '/upload_scraper'
   };
@@ -81,7 +81,7 @@ const CONFIG = {
   
     manualScrape: async (id) => {
       try {
-        const response = await fetch(API.MANUAL_SCRAPE(id));
+        const response = await fetch(API.UPDATE_WEBSITE(id));
         const data = await response.json();
         toastr.success(data.result);
         utils.reloadPage();
@@ -106,7 +106,7 @@ const CONFIG = {
     },
     manualScrape: async (id) => {
       try {
-        const response = await fetch(API.MANUAL_SCRAPE(id));
+        const response = await fetch(API.UPDATE_WEBSITE(id));
         const data = await response.json();
         toastr.success(data.result);
         
@@ -120,6 +120,15 @@ const CONFIG = {
         }
       } catch (error) {
         utils.showError('Une erreur est survenue lors du scan.');
+      }
+    },
+    fetchUpdatedData: async () => {
+      try {
+        const response = await fetch('/fetch_updated_data');
+        const data = await response.json();
+        return data;
+      } catch (error) {
+        utils.showError('Une erreur est survenue lors du chargement des données mises à jour.');
       }
     },
   };
@@ -156,7 +165,7 @@ const CONFIG = {
       Array.from(rows).forEach(row => {
         const siteName = row.querySelector('td[data-label="Nom du Site"]').textContent.toLowerCase();
         const url = row.querySelector('td[data-label="URL"]').textContent.toLowerCase();
-        const siteType = row.querySelector('td[data-label="Type de Site"]').textContent.toLowerCase();
+        const siteType = row.querySelector('td[data-label="ID du site"]').textContent.toLowerCase();
         const parsingMethod = row.querySelector('td[data-label="Méthode de Parsing"]').textContent.toLowerCase();
         
         const matchesSearch = [siteName, url, siteType, parsingMethod].some(text => text.includes(searchTerm));
@@ -189,7 +198,15 @@ const CONFIG = {
       } catch (error) {
         utils.showError('An error occurred while uploading the scraper.');
       }
-    }
+    },
+    manualScrape: async (event) => {
+      const id = event.target.closest('tr').dataset.websiteId;
+      api.manualScrape(id).then(() => {
+        api.fetchUpdatedData().then(data => {
+          updateTable(data);
+        });
+      });
+    },
   };
   
   // Initialize
@@ -220,7 +237,7 @@ function setTheme(isDark) {
     document.body,
     document.querySelector('header'),
     document.querySelector('table'),
-    ...document.querySelectorAll('th, td, input, select, button, .type-column, .parsing-method-column, tr[data-is-plugin="true"]')
+    ...document.querySelectorAll('th, td, input, select, button, .type-column, .parsing-method-column')
   ];
   
   elementsToToggle.forEach(el => {
@@ -250,3 +267,53 @@ if (modeToggle) {
 
 // Call setTheme on page load to ensure correct initial state
 document.addEventListener('DOMContentLoaded', () => setTheme(defaultDark));
+
+function updateTable(data) {
+  const tableBody = DOM.jobTableBody();
+  tableBody.innerHTML = '';
+  
+  const rows = data.map(website => {
+    const intervalOptions = [
+      { value: 'never', label: 'Jamais' },
+      { value: '5min', label: '5 minutes' },
+      { value: '30min', label: '30 minutes' },
+      { value: '1hour', label: '1 heure' },
+      { value: '2hours', label: '2 heures' },
+      { value: '12hours', label: '12 heures' },
+      { value: '1day', label: '1 jour' },
+      { value: '1week', label: '1 semaine' }
+    ];
+
+    const intervalSelectOptions = intervalOptions
+      .map(option => `<option value="${option.value}" ${website.scrape_interval === option.value ? 'selected' : ''}>${option.label}</option>`)
+      .join('');
+
+    return `
+      <tr data-website-id="${website.id}">
+        <td data-label="Nom du Site">${website.name}</td>
+        <td data-label="URL">${website.url}</td>
+        <td data-label="ID du site" class="type-column">
+          ${website.is_ui_generated ? 'Plugin' : 'Ajouté par l\'utilisateur'}
+        </td>
+        <td data-label="Méthode de Parsing" class="parsing-method-column">
+          ${website.is_ui_generated ? 'Parser spécifique' : 'Changement de hash'}
+        </td>
+        <td data-label="Nombre d'Offres">${website.last_link_count || 'Pas encore vérifié'}</td>
+        <td data-label="Dernière Vérification">${website.last_checked || 'Pas encore vérifié'}</td>
+        <td data-label="Intervalle de Scan">
+          <select class="interval-select">
+            ${intervalSelectOptions}
+          </select>
+        </td>
+        <td data-label="Actions">
+          <div class="action-buttons">
+            <button class="manual-scrape-btn">Scanner Maintenant</button>
+            <button class="delete-website-btn">Supprimer</button>
+          </div>
+        </td>
+      </tr>
+    `;
+  }).join('');
+  
+  tableBody.innerHTML = rows;
+}

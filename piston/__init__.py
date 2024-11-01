@@ -63,7 +63,6 @@ def init_websites(app, websites_data):
                     name=data[0],
                     url=data[1],
                     plugin_name=data[2],
-                    is_enabled=True,  # Set a default value
                     scrape_interval="never"  # Set a default value
                 )
                 db.session.add(website)

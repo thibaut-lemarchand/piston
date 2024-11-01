@@ -35,7 +35,6 @@ def client():
             name="Test Website",
             url="http://test.com",
             plugin_name="default",
-            is_enabled=True,
             scrape_interval="never"
         )
         db.session.add(test_website)
@@ -53,12 +52,7 @@ def test_index(client):
     assert b"pistON" in response.data
 
 
-def test_toggle_website(client):
-    response = client.get("/toggle/1")
-    assert response.status_code == 302  # Redirect
-
-
-def test_manual_scrape(client):
+def test_update_website(client):
     response = client.get("/scrape/1")
     assert response.status_code == 200
     assert b"result" in response.data

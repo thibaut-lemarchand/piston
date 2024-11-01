@@ -55,34 +55,30 @@
                 <tr>
                     <th>Nom du Site</th>
                     <th>URL</th>
-                    <th>Type de Site</th>
+                    <th>ID du site</th>
                     <th>Méthode de Parsing</th>
                     <th>Nombre d'Offres</th>
                     <th>Dernière Vérification</th>
-                    <th>Dernière Mise à Jour</th>
                     <th>Intervalle de Scan</th>
                     <th>Actions</th>
                 </tr>
             </thead>
             <tbody>
                 {% for website in websites %}
-                <tr data-website-id="{{ website['id'] }}" data-is-plugin="{{ not website['is_ui_generated'] }}" class="dark-mode">
+                <tr data-website-id="{{ website['id'] }}" class="dark-mode">
                     <td data-label="Nom du Site">{{ website['name'] }}</td>
                     <td data-label="URL">{{ website['url'] }}</td>
-                    <td data-label="Type de Site" class="type-column">
-                        {{ 'Plugin' if not website['is_ui_generated'] else 'Ajouté par l\'utilisateur' }}
+                    <td data-label="ID du site" class="type-column">
+                        {{ website['id'] }}
                     </td>
                     <td data-label="Méthode de Parsing" class="parsing-method-column">
-                        {{ 'Parser spécifique' if not website['is_ui_generated'] else 'Changement de hash' }}
+                        {{ 'Parser spécifique' if website['scraping_type'] == 'links' else 'Changement de hash' }}
                     </td>
                     <td data-label="Nombre d'Offres">
-                        {{ '/' if website['is_ui_generated'] else website['last_link_count'] or 'Pas encore vérifié' }}
+                        {{ '/' if website['scraping_type'] == 'hash' else website['last_link_count'] or 'Pas encore vérifié' }}
                     </td>
                     <td data-label="Dernière Vérification">
                         {{ website['last_checked'] or 'Pas encore vérifié' }}
-                    </td>
-                    <td data-label="Dernière Mise à Jour">
-                        {{ website['last_updated'] or 'Jamais' }}
                     </td>
                     <td data-label="Intervalle de Scan">
                         <select class="interval-select">
@@ -99,9 +95,7 @@
                     <td data-label="Actions">
                         <div class="action-buttons">
                             <button class="manual-scrape-btn">Scanner Maintenant</button>
-                            {% if website['is_ui_generated'] %}
                             <button class="delete-website-btn">Supprimer</button>
-                            {% endif %}
                         </div>
                     </td>
                 </tr>

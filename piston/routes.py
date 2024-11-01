@@ -3,9 +3,9 @@ from datetime import datetime
 from flask import Blueprint, render_template, redirect, url_for, jsonify, request
 from werkzeug.utils import secure_filename
 from piston.models import (
+    Website,
     get_websites,
-    toggle_website,
-    manual_scrape,
+    update_website,
     update_interval,
     add_custom_website,
     delete_custom_website,
@@ -21,20 +21,14 @@ def index():
     return render_template("index.html", websites=websites)
 
 
-@app.route("/toggle/<int:id>")
-def toggle(id):
-    toggle_website(id)
-    return redirect(url_for("routes.index"))
-
-
 @app.route("/scrape/<path:id>")
 def scrape(id):
-    result = manual_scrape(id)
+    result = update_website(id)
     return jsonify({"result": result})
 
 @app.route('/scrape/<id>')
-def manual_scrape_route(id):
-    result = manual_scrape(id)
+def update_website_route(id):
+    result = update_website(id)
     current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     return jsonify({"result": result, "last_checked": current_time})
 
@@ -86,3 +80,8 @@ def upload_scraper():
             return jsonify({"message": "Failed to add scraper to database"}), 500
     else:
         return jsonify({"message": "Invalid file type. Only .py files are allowed."}), 400
+
+@app.route('/fetch_updated_data')
+def fetch_updated_data():
+    updated_websites = get_websites()
+    return jsonify(updated_websites)

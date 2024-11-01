@@ -18,11 +18,15 @@ class Website(db.Model):
     name = db.Column(db.String, nullable=False)
     url = db.Column(db.String, nullable=False)
     plugin_name = db.Column(db.String, nullable=False)
-    is_enabled = db.Column(db.Boolean, nullable=False, default=True)
-    last_link_count = db.Column(db.Integer)
+    scraping_type = db.Column(db.String, default='links')
     last_checked = db.Column(db.DateTime)
     scrape_interval = db.Column(db.String, default='daily')
-    links = db.relationship('Link', backref='website', lazy=True)
+
+class LinkHistory(db.Model):
+    __tablename__ = 'link_history'
+    id = db.Column(db.Integer, primary_key=True)
+    website_id = db.Column(db.Integer, db.ForeignKey('websites.id'), nullable=False)
+    last_link_count = db.Column(db.Integer)
 
 class Link(db.Model):
     __tablename__ = 'links'
@@ -31,73 +35,40 @@ class Link(db.Model):
     link = db.Column(db.String, nullable=False)
     description = db.Column(db.String)
 
-class CustomWebsite(db.Model):
-    __tablename__ = 'custom_websites'
+class Hash(db.Model):
+    __tablename__ = 'hash'
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String, nullable=False)
-    url = db.Column(db.String, nullable=False)
-    last_hash = db.Column(db.String)
-    last_checked = db.Column(db.DateTime)
-    scrape_interval = db.Column(db.String, default='daily')
-    is_ui_generated = db.Column(db.Boolean, default=False)
+    website_id = db.Column(db.Integer, db.ForeignKey('websites.id'), nullable=False)
+    last_hash = db.Column(db.String, nullable=False)
+
 
 def init_db():
     db.create_all()
 
-
 def get_websites():
-    regular_websites = Website.query.all()
-    custom_websites = CustomWebsite.query.all()
-    
+    websites = Website.query.all()
+
     websites = [
         {
             "id": w.id,
             "name": w.name,
             "url": w.url,
             "plugin_name": w.plugin_name,
-            "is_enabled": w.is_enabled,
-            "last_link_count": w.last_link_count,
+            "scraping_type": w.scraping_type,
             "last_checked": w.last_checked,
             "scrape_interval": w.scrape_interval,
-            "is_ui_generated": False,
         }
-        for w in regular_websites
-    ] + [
-        {
-            "id": f"custom_{w.id}",
-            "name": w.name,
-            "url": w.url,
-            "plugin_name": None,
-            "is_enabled": None,
-            "last_link_count": None,
-            "last_checked": w.last_checked,
-            "scrape_interval": w.scrape_interval,
-            "is_ui_generated": w.is_ui_generated,
-        }
-        for w in custom_websites
+        for w in websites
     ]
-    
+
     return websites
 
-def toggle_website(id):
-    website = db.session.get(Website, id)
-    if website:
-        website.is_enabled = not website.is_enabled
-        db.session.commit()
-
-
-def manual_scrape(id):
+def update_website(id):
     try:
-        if id.startswith("custom_"):
-            website = db.session.get(CustomWebsite, id.split("_")[1])
-            if website:
-                url = website.url
-                plugin_name = f"custom_{website.name.replace(' ', '_')}"
-        else:
-            website = db.session.get(Website, id)
-            if website:
-                url = website.url
-                plugin_name = website.plugin_name
+        website = db.session.get(Website, id)
+        if website:
+            url = website.url
+            plugin_name = website.plugin_name
 
         if not website:
             return "Website not found"
@@ -105,42 +76,63 @@ def manual_scrape(id):
         scrape_result = scrape_website(url, plugin_name)
 
         if scrape_result:
-            current_link_count = scrape_result["link_count"]
-            current_links_with_descriptions = scrape_result["links_with_descriptions"]
+            if website.scraping_type == 'hash':
 
-            if isinstance(website, CustomWebsite):
-                html_hash = scrape_result["html_hash"]
-                existing_links = set()  # CustomWebsite doesn't have links
-            else:
-                existing_links = set(link.link for link in website.links)
+                if "html_hash" in scrape_result.keys():
+                    before_hash = db.session.query(Hash).filter(Hash.id == website.id).first()
+                    after_hash = scrape_result["html_hash"]
 
-            new_links_with_descriptions = [
-                link for link in current_links_with_descriptions
-                if link[0] not in existing_links
-            ]
+                    if before_hash is None:
+                        result = f"New site: hash generated"
+                        new_hash = Hash(website_id=website.id, last_hash=after_hash)
+                        db.session.add(new_hash)
 
-            if new_links_with_descriptions:
-                for link, description in new_links_with_descriptions:
-                    new_link = Link(website_id=website.id, link=link, description=description)
-                    db.session.add(new_link)
+                    elif before_hash.last_hash != after_hash:
+                        result = f"Update detected: site hash changed"
+                        before_hash.last_hash = after_hash
 
-                subject = f"New links detected on {url}"
-                body = "The following new links were found:\n\n" + "\n".join(
-                    [f"{link[0]} - {link[1]}" for link in new_links_with_descriptions]
-                )
-                send_email(subject, body)
+                        subject = f"Update from site {url}"
+                        body = f"{url} site was updated (new hash: {after_hash})"
+                        send_email(subject, body)
+                    else:
+                        result = "Same hash as before: no site update"
+                else:
+                    result = "Wrong plugin type"
 
-                result = f"Update detected: {len(new_links_with_descriptions)} new links found"
-            else:
-                result = "No new links found"
+            elif website.scraping_type == 'links':
+                current_link_count = scrape_result["link_count"]
+                current_links_with_descriptions = scrape_result["links_with_descriptions"]
 
-            if isinstance(website, CustomWebsite):
-                website.last_hash = html_hash
-            else:
-                website.last_link_count = current_link_count
+                db_links = db.session.query(Link).filter(Link.website_id == website.id).all()
+                existing_links = set(db_links)
+
+                new_links_with_descriptions = [
+                    link for link in current_links_with_descriptions
+                    if link[0] not in existing_links
+                ]
+
+                if new_links_with_descriptions:
+                    result = f"Update detected: {len(new_links_with_descriptions)} new links found"
+
+                    for link, description in new_links_with_descriptions:
+                        new_link = Link(website_id=website.id, link=link, description=description)
+                        db.session.add(new_link)
+
+                    link_history = db.session.query(LinkHistory).filter(LinkHistory.website_id == website.id)
+                    link_history.last_link_count = current_link_count
+
+                    subject = f"New links detected on {url}"
+                    body = "The following new links were found:\n\n" + "\n".join(
+                        [f"{link[0]} - {link[1]}" for link in new_links_with_descriptions]
+                    )
+                    send_email(subject, body)
+
+                else:
+                    result = "No new links found"
 
             website.last_checked = db.func.now()
             db.session.commit()
+
         else:
             result = "Scraping failed"
 
@@ -152,11 +144,7 @@ def manual_scrape(id):
 
 
 def update_interval(id, interval):
-    if id.startswith("custom_"):
-        website = db.session.get(CustomWebsite, id.split("_")[1])
-    else:
-        website = db.session.get(Website, id)
-    
+    website = db.session.get(Website, id)
     if website:
         website.scrape_interval = interval
         db.session.commit()
@@ -172,44 +160,20 @@ def init_websites(websites_data):
         db.session.commit()
 
 
-def check_updates(current_app):
-    websites = Website.query.filter_by(is_enabled=True).all()
-    for website in websites:
-        scrape_result = scrape_website(website.url, website.plugin_name)
-        if scrape_result:
-            current_link_count = scrape_result["link_count"]
-            current_links_with_descriptions = scrape_result["links_with_descriptions"]
-
-            existing_links = set(link.link for link in website.links)
-            new_links_with_descriptions = [
-                link for link in current_links_with_descriptions
-                if link[0] not in existing_links
-            ]
-
-            if new_links_with_descriptions:
-                for link, description in new_links_with_descriptions:
-                    new_link = Link(website_id=website.id, link=link, description=description)
-                    db.session.add(new_link)
-
-                subject = f"New links detected on {website.url}"
-                body = "The following new links were found:\n\n" + "\n".join(
-                    [f"{link[0]} - {link[1]}" for link in new_links_with_descriptions]
-                )
-                send_email(subject, body)
-
-            website.last_link_count = current_link_count
-            website.last_checked = datetime.now()
-
-    db.session.commit()
-
-
 def add_custom_website(name, url):
-    custom_website = CustomWebsite(name=name, url=url, scrape_interval="never", is_ui_generated=True)
-    db.session.add(custom_website)
+
+    plugin_name = f"hash_{name.replace(' ', '_').lower()}"
+    new_website = Website(
+        name=name,
+        url=url,
+        plugin_name=plugin_name,
+        scraping_type="hash",
+        scrape_interval="never",
+    )
+    db.session.add(new_website)
     db.session.commit()
     
 # Create a plugin file for the custom website
-    plugin_name = f"custom_{name.replace(' ', '_')}"
     plugin_content = f"""
         import requests
         import hashlib
@@ -237,40 +201,18 @@ def add_custom_website(name, url):
     return f"Custom website {name} added successfully"
 
 
-def check_custom_updates():
-    custom_websites = CustomWebsite.query.all()
-
-    for website in custom_websites:
-        plugin_name = f"custom_{website.url.replace(' ', '_')}"
-        scrape_result = scrape_website(website.url, plugin_name)
-        if scrape_result:
-            current_hash = scrape_result["html_hash"]
-            if current_hash != website.last_hash:
-                subject = f"Update detected on {website.url}"
-                body = "The website content has changed."
-                send_email(subject, body)
-
-                website.last_hash = current_hash
-                website.last_checked = datetime.now()
-
-    db.session.commit()
-
-
 def delete_custom_website(id):
-    if id.startswith("custom_"):
-        custom_website = db.session.get(CustomWebsite, id.split("_")[1])
-        if custom_website and custom_website.is_ui_generated:
-            db.session.delete(custom_website)
-            db.session.commit()
+    website = db.session.get(Website, id)
+    if website:
+        db.session.delete(website)
+        db.session.commit()
+        
+        # Delete the corresponding plugin file
+        plugin_name = website.plugin_name
+        if os.path.exists(f"plugins/{plugin_name}.py"):
+            os.remove(f"plugins/{plugin_name}.py")
             
-            # Delete the corresponding plugin file
-            plugin_name = f"custom_{custom_website.name.replace(' ', '_')}"
-            if os.path.exists(f"plugins/{plugin_name}.py"):
-                os.remove(f"plugins/{plugin_name}.py")
-                
-                return f"Custom website {custom_website.name} deleted successfully"
-        elif custom_website:
-            return "Cannot delete manually created plugin"
+            return f"Custom website {website.name} deleted successfully"
     return "Website not found"
 
 def add_uploaded_scraper(filename):
@@ -290,7 +232,6 @@ def add_uploaded_scraper(filename):
             name=module.WEBSITE_NAME,
             url=module.WEBSITE_URL,
             plugin_name=module_name,
-            is_enabled=True,
             scrape_interval='never'
         )
         db.session.add(new_website)
@@ -303,11 +244,7 @@ def add_uploaded_scraper(filename):
 
 def update_last_checked(id):
     try:
-        if id.startswith("custom_"):
-            website = db.session.get(CustomWebsite, id.split("_")[1])
-        else:
-            website = db.session.get(Website, id)
-        
+        website = db.session.get(Website, id)
         if website:
             website.last_checked = datetime.now()
             db.session.commit()
