@@ -3,4 +3,4 @@
 *.db
 .vscode/*
 z_*
-custom_*.py
+hash_*.py
