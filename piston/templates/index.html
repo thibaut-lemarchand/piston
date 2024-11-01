@@ -75,7 +75,7 @@
                         {{ 'Parser spécifique' if website['scraping_type'] == 'links' else 'Changement de hash' }}
                     </td>
                     <td data-label="Nombre d'Offres">
-                        {{ '/' if website['scraping_type'] == 'hash' else website['last_link_count'] or 'Pas encore vérifié' }}
+                        {{ '/' if website['scraping_type'] == 'hash' else website.last_link_count or 'Pas encore vérifié' }}
                     </td>
                     <td data-label="Dernière Vérification">
                         {{ website['last_checked'] or 'Pas encore vérifié' }}

@@ -211,16 +211,6 @@ button:hover {
     color: #95a5a6;
 }
 
-/* Plugin Row Highlight */
-tr[data-is-plugin="true"] {
-    background-color: #f0f8ff;
-    transition: background-color 0.3s;
-}
-
-.dark-mode tr[data-is-plugin="true"] {
-    background-color: #34495e;
-}
-
 /* Light/Dark Mode Toggle */
 .mode-toggle {
     position: fixed;

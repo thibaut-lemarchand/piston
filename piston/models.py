@@ -22,7 +22,12 @@ class Website(db.Model):
     last_checked = db.Column(db.DateTime)
     scrape_interval = db.Column(db.String, default='daily')
 
-class LinkHistory(db.Model):
+    def get_last_link_count(self):
+        # Get the latest link counts entry for this website
+        link_counts = LinkCounts.query.filter_by(website_id=self.id).order_by(LinkCounts.id.desc()).first()
+        return link_counts.last_link_count if link_counts else None
+
+class LinkCounts(db.Model):
     __tablename__ = 'link_history'
     id = db.Column(db.Integer, primary_key=True)
     website_id = db.Column(db.Integer, db.ForeignKey('websites.id'), nullable=False)
@@ -57,9 +62,12 @@ def get_websites():
             "scraping_type": w.scraping_type,
             "last_checked": w.last_checked,
             "scrape_interval": w.scrape_interval,
+            "last_link_count": w.get_last_link_count(),
         }
         for w in websites
     ]
+
+    print(websites)
 
     return websites
 
@@ -104,7 +112,7 @@ def update_website(id):
                 current_links_with_descriptions = scrape_result["links_with_descriptions"]
 
                 db_links = db.session.query(Link).filter(Link.website_id == website.id).all()
-                existing_links = set(db_links)
+                existing_links = set([db_link.link for db_link in db_links])
 
                 new_links_with_descriptions = [
                     link for link in current_links_with_descriptions
@@ -118,8 +126,13 @@ def update_website(id):
                         new_link = Link(website_id=website.id, link=link, description=description)
                         db.session.add(new_link)
 
-                    link_history = db.session.query(LinkHistory).filter(LinkHistory.website_id == website.id)
-                    link_history.last_link_count = current_link_count
+                    link_counts = db.session.query(LinkCounts).filter(LinkCounts.website_id == website.id).first()
+                    print(link_counts)
+                    if link_counts is None:
+                        new_link_counts = LinkCounts(website_id=website.id, last_link_count=current_link_count)
+                        db.session.add(new_link_counts)
+                    else:
+                        link_counts.last_link_count = current_link_count
 
                     subject = f"New links detected on {url}"
                     body = "The following new links were found:\n\n" + "\n".join(
