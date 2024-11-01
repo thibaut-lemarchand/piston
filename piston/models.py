@@ -67,8 +67,6 @@ def get_websites():
         for w in websites
     ]
 
-    print(websites)
-
     return websites
 
 def update_website(id):
@@ -127,7 +125,6 @@ def update_website(id):
                         db.session.add(new_link)
 
                     link_counts = db.session.query(LinkCounts).filter(LinkCounts.website_id == website.id).first()
-                    print(link_counts)
                     if link_counts is None:
                         new_link_counts = LinkCounts(website_id=website.id, last_link_count=current_link_count)
                         db.session.add(new_link_counts)
