@@ -271,7 +271,7 @@ document.addEventListener('DOMContentLoaded', () => setTheme(defaultDark));
 function updateTable(data) {
   const tableBody = DOM.jobTableBody();
   tableBody.innerHTML = '';
-  
+
   const rows = data.map(website => {
     const intervalOptions = [
       { value: 'never', label: 'Jamais' },
@@ -289,17 +289,19 @@ function updateTable(data) {
       .join('');
 
     return `
-      <tr data-website-id="${website.id}">
+      <tr data-website-id="${website.id}" class="dark-mode">
         <td data-label="Nom du Site">${website.name}</td>
         <td data-label="URL">${website.url}</td>
         <td data-label="ID du site" class="type-column">
-          ${website.is_ui_generated ? 'Plugin' : 'Ajouté par l\'utilisateur'}
+          ${website.id}
         </td>
         <td data-label="Méthode de Parsing" class="parsing-method-column">
-          ${website.is_ui_generated ? 'Parser spécifique' : 'Changement de hash'}
+          ${website.scraping_type == 'links' ? 'Parser spécifique' : 'Changement de hash'}
         </td>
-        <td data-label="Nombre d'Offres">${website.last_link_count || 'Pas encore vérifié'}</td>
-        <td data-label="Dernière Vérification">${website.last_checked || 'Pas encore vérifié'}</td>
+        <td data-label="Nombre d'Offres">
+          ${website.scraping_type == 'hash' ? '/' : website.last_link_count || 'Pas encore vérifié'}</td>
+        <td data-label="Dernière Vérification">
+          ${website.last_checked || 'Pas encore vérifié'}</td>
         <td data-label="Intervalle de Scan">
           <select class="interval-select">
             ${intervalSelectOptions}
