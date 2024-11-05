@@ -13,7 +13,7 @@ test:
     - pip install poetry
     - poetry install --no-interaction --no-ansi
   script:
-    - pytest
+    - poetry run pytest
 
 build:
   stage: build
