@@ -11,7 +11,7 @@ test:
   image: python:3.12-slim
   before_script:
     - pip install poetry
-    - poetry install --no-dev --no-interaction --no-ansi
+    - poetry install --no-interaction --no-ansi
   script:
     - pytest
 
