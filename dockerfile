@@ -4,11 +4,17 @@ FROM python:3.12-slim
 # Set the working directory in the container
 WORKDIR /piston
 
-# Copy the requirements file into the container
-COPY requirements.txt .
+# Install poetry
+RUN pip install poetry
 
-# Install the required packages
-RUN pip install --no-cache-dir -r requirements.txt
+# Copy poetry files
+COPY pyproject.toml poetry.lock* ./
+
+# Configure poetry to not create a virtual environment in the container
+RUN poetry config virtualenvs.create false
+
+# Install dependencies
+RUN poetry install --no-dev --no-interaction --no-ansi
 
 # Copy the rest of the application code
 COPY . .
