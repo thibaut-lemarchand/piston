@@ -69,9 +69,13 @@ def init_websites(app, websites_data):
                 db.session.add(website)
             db.session.commit()
 
-def ensure_plugins_directory():
-    plugin_dir = "./plugins"
-    default_plugin_dir = "./plugins_default"
+def ensure_plugins_directory(project_directory='.'):
+    plugin_dir = os.path.join(
+        project_directory, "plugins"
+    )
+    default_plugin_dir = os.path.join(
+        project_directory, "plugins_default"
+    )
 
     # Check if there are any .py files in the plugin directory
     py_files_in_plugin_dir = [
