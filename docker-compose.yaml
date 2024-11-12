@@ -8,3 +8,5 @@ services:
       EMAIL_ADDRESS: #your email address
       EMAIL_PASSWORD: #your email password
       RECIPIENT_EMAIL: # the email you want to send to
+    volumes:
+      - /host/path:/piston/plugins
