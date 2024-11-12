@@ -2,6 +2,7 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from dotenv import load_dotenv
 import os
+import shutil
 
 load_dotenv()
 
@@ -67,3 +68,20 @@ def init_websites(app, websites_data):
                 )
                 db.session.add(website)
             db.session.commit()
+
+def ensure_plugins_directory():
+    plugin_dir = "./plugins"
+    default_plugin_dir = "./plugins_default"
+
+    # Check if there are any .py files in the plugin directory
+    py_files_in_plugin_dir = [
+        f for f in os.listdir(plugin_dir) if f.endswith('.py')
+    ]
+
+    if not py_files_in_plugin_dir:
+        for plugin in os.listdir(default_plugin_dir):
+            if plugin.endswith('.py'):
+                shutil.copyfile(
+                    os.path.join(default_plugin_dir, plugin),
+                    os.path.join(plugin_dir, plugin),
+                )

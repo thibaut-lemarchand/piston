@@ -1,8 +1,17 @@
 from flask_apscheduler import APScheduler
-from piston import create_app, init_db, load_plugins, init_websites
+from piston import (
+    create_app,
+    init_db,
+    load_plugins,
+    init_websites,
+    ensure_plugins_directory
+)
 from piston.scheduler import init_scheduler
 
+
 if __name__ == "__main__":
+    ensure_plugins_directory()
+
     app = create_app()
     scheduler = APScheduler()
     scheduler.init_app(app)
