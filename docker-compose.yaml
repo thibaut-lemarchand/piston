@@ -5,8 +5,8 @@ services:
     ports:
       - "5000:5000"
     environment:
-      EMAIL_ADDRESS: #your email address
-      EMAIL_PASSWORD: #your email password
-      RECIPIENT_EMAIL: # the email you want to send to
+      EMAIL_ADDRESS: ${EMAIL_ADDRESS}
+      EMAIL_PASSWORD: ${EMAIL_PASSWORD}
+      RECIPIENT_EMAIL: ${RECIPIENT_EMAIL}
     volumes:
-      - /host/path:/piston/plugins
+      - ${HOST_PLUGINS_PATH}:/piston/plugins
