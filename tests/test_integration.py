@@ -3,7 +3,8 @@ import os
 import pytest
 
 # Add the root directory to the Python path
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+root_path = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+sys.path.insert(0, root_path)
 
 from piston import create_app, db, ensure_plugins_directory
 from piston.models import Website
@@ -25,7 +26,7 @@ def test_app():
 
 @pytest.fixture
 def client():
-    ensure_plugins_directory(project_directory='.')
+    ensure_plugins_directory(project_directory=root_path)
 
     app = create_app({'TESTING': True, 'SQLALCHEMY_DATABASE_URI': 'sqlite:///:memory:'})
 
