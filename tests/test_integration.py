@@ -26,7 +26,8 @@ def test_app():
 
 @pytest.fixture
 def client():
-    ensure_plugins_directory(project_directory=root_path)
+    if not os.path.exists(os.path.join(root_path, "plugins")):
+        os.mkdir(os.path.join(root_path, "plugins"))
 
     app = create_app({'TESTING': True, 'SQLALCHEMY_DATABASE_URI': 'sqlite:///:memory:'})
 
