@@ -10,10 +10,10 @@ test:
   stage: test
   image: python:3.12-slim
   before_script:
-    - pip install poetry
-    - poetry install --no-interaction --no-ansi
+    - pip install uv
+    - uv pip sync pyproject.toml --system
   script:
-    - poetry run pytest
+    - uv run pytest
 
 build:
   stage: build
