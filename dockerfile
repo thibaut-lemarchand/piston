@@ -5,16 +5,13 @@ FROM python:3.12-slim
 WORKDIR /piston
 
 # Install poetry
-RUN pip install poetry
+RUN pip install uv
 
 # Copy poetry files
 COPY pyproject.toml poetry.lock* ./
 
-# Configure poetry to not create a virtual environment in the container
-RUN poetry config virtualenvs.create false
-
 # Install dependencies
-RUN poetry install --no-dev --no-interaction --no-ansi
+RUN uv pip sync pyproject.toml --system
 
 # Copy the rest of the application code
 COPY . .
@@ -23,4 +20,4 @@ COPY . .
 EXPOSE 5000
 
 # Command to run the application when the container launches
-CMD ["python", "main.py"]
+CMD ["uv", "run", "python", "main.py"]

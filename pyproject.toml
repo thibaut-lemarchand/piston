@@ -1,27 +1,34 @@
-[tool.poetry]
+[project]
 name = "piston"
 version = "0.1.0"
-description = ""
-authors = ["Thibaut Lemarchand <git@tlemarchand.com>"]
+description = "Add your description here"
 readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "apscheduler>=3.10.4",
+    "blinker>=1.9.0",
+    "bs4>=0.0.2",
+    "click>=8.1.7",
+    "flask>=3.1.0",
+    "flask-apscheduler>=1.13.1",
+    "flask-sqlalchemy>=3.1.1",
+    "itsdangerous>=2.2.0",
+    "jinja2>=3.1.4",
+    "jupyter>=1.1.1",
+    "markupsafe>=3.0.2",
+    "pytest>=8.3.3",
+    "pytest-env>=1.1.5",
+    "pytest-flask>=1.3.0",
+    "python-dotenv>=1.0.1",
+    "pytz>=2024.2",
+    "requests>=2.32.3",
+    "schedule>=1.2.2",
+    "six>=1.16.0",
+    "tzlocal>=5.2",
+    "werkzeug>=3.1.3",
+]
 
-[tool.poetry.dependencies]
-python = "^3.12"
-Flask = "^3.0.3"
-beautifulsoup4 = "^4.12.3"
-requests = "^2.32.3"
-schedule = "^1.2.2"
-python-dotenv = "^1.0.1"
-pytest = "^8.3.3"
-pytest-flask = "^1.3.0"
-jupyter = "^1.1.1"
-pytest-env = "^1.1.5"
-flask-sqlalchemy = "^3.1.1"
-flask-apscheduler = "^1.13.1"
-
-[tool.poetry.group.dev.dependencies]
-ipykernel = "^6.29.5"
-
-[build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
+[dependency-groups]
+dev = [
+    "ipykernel>=6.29.5",
+]
