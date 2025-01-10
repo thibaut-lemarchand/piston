@@ -1,110 +1,60 @@
-# Job Offer Update Checker
+# Piston Job Search Assistant
 
 ## Overview
-The **Job Offer Update Checker** is a powerful Python-based application designed to monitor job offer websites for updates. It leverages Flask for the web interface, SQLite for efficient database management, and a flexible plugin system for scraping various job sites. This tool empowers users to stay on top of the latest job postings by automating the monitoring process and providing timely notifications.
+Piston is a job search assistant designed to automate the process of scraping job portals and sending email notifications when new job offers are found. Leveraging Flask, APScheduler, and a modular plugin system, it ensures flexibility and scalability in handling various job websites.
 
-## Key Features
+## Features
+- **Automated Scraping**: Efficiently gathers job postings from multiple job websites.
+-**Email Alerts**: Provides timely updates via email whenever new relevant job offers are detected
+-**Modular Plugin System**: Supports default plugins for demonstration purposes and can be extended with custom plugins to scrape additional sources
 
-- **Automated Job Site Monitoring**: Regularly checks configured job websites for new or updated listings based on user-defined intervals.
-- **Manual Scraping**: Allows users to trigger immediate scrapes of specific job sites on demand.
-- **Customizable Scrape Intervals**: Users can fine-tune the frequency of checks for each monitored website.
-- **Email Notifications**: Sends alerts when new job offers or updates are detected.
-- **Extensible Plugin System**: Supports custom plugins for scraping different job boards and websites.
-- **User-Friendly Web Interface**: Easy-to-use Flask-based frontend for managing monitored sites and viewing results.
-
-## Installation
-
-### Prerequisites
-
-- Python 3.7+
+## Getting Started
+### Prerequisites:
+- Python 3.12+
 - Docker (optional, for containerized deployment)
-- Git (for cloning the repository)
+- `uv` package manager for dependency management (can use `pipenv` or `poetry` instead)
 
-### Installation Steps
+### Installation
+#### Using Docker:
+1. Clone the repository
+2. Build the Docker image
+3. Run the Docker container
 
-1. **Clone the Repository**:
-   ```bash
-   git clone https://github.com/yourusername/job-offer-update-checker.git
-   cd job-offer-update-checker
-   ```
+#### Using Command Line
+1. Clone the repository
+2. Install dependencies using your preferred package manager
+3. Configure environment variables for database and email settings
+4. Run the application in a development or production mode as needed
 
-2. **Set Up the Python Environment**:
-   
-   This project uses Poetry for dependency management. However, if you encounter issues with Poetry and venv compatibility, you can use a traditional venv setup:
+## Testing
+### Integration Tests
+Piston includes a comprehensive set of integration tests to ensure that the core functionalities of the web application and its interaction with the database are working seamlessly.
 
-   Using Poetry (recommended):
-   ```bash
-   poetry install
-   poetry shell
-   ```
-
-   Alternative method using venv:
-   ```bash
-   python -m venv venv
-   source venv/bin/activate  # On Windows, use `venv\Scripts\activate`
-   pip install -r requirements.txt
-   ```
-
-   Note: If using the venv method, ensure you have a `requirements.txt` file in your project root.
-
-3. **Configure the Application**:
-   - Copy the example configuration file:
-     ```bash
-     cp config.example.yml config.yml
-     ```
-   - Edit `config.yml` to set up your email notifications and database preferences.
-
-4. **Initialize the Database**:
-   ```bash
-   python manage.py init_db
-   ```
-
-5. **Run the Application**:
-   ```bash
-   python app.py
-   ```
-
-   The application will be available at `http://localhost:5000`.
-
-## Usage
-
-1. Access the web interface at `http://localhost:5000`.
-2. Add job websites you want to monitor using the "Add Website" feature.
-3. Configure scraping intervals for each website.
-4. Use the "Manual Scrape" button to immediately check a website for updates.
-5. View the latest job offers and updates in the dashboard.
-
-## Development
-
-### Adding New Plugins
-
-To create a plugin for a new job website:
-
-1. Create a new Python file in the `plugins/` directory.
-2. Implement the required scraping logic, following the existing plugin structure.
-3. Register your new plugin in `plugins/__init__.py`.
-
-### Running Tests
-
-Execute the test suite using:
+#### Running the Tests
+- Ensure all necessary components and configurations are correctly set up.
+- Execute the integration tests using `pytest`
 
 ```bash
-pytest
+pytest test/integration.py
 ```
 
-## Deployment
-
-For production deployment, consider using Docker:
-
-```bash
-docker build -t job-offer-update-checker .
-docker run -p 5000:5000 job-offer-update-checker
-```
+### Unit Tests
+For detailed unit testing, refer to the individual modules and components within the project
 
 ## Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
+- Fork the repository on GitHub
+- Create your feature branch (`git checkout -b feature/AmazingFeature`)
+- Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+- Push to the branch (`git push origin feature/AmazingFeature`)
+- Open a pull request
 
 ## License
+Distributed under the MIT License. See `LICENSE` for more information.
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+## Contact
+Your Name - [your_email@example.com](mailto:your_email@example.com)
+Project Link: [https://github.com/your-repo/piston](https://github.com/your-repo/piston)
+
+---
+
+This README provides a general overview of the project, including how to get started and run tests. The integration tests section mentions that they exist for verifying the application's core functionalities without delving into specific code snippets.
