@@ -29,8 +29,5 @@ build:
 deploy:
   stage: deploy
   image: alpine:latest
-  script:
-    - echo "Deploy to production server"
-    - echo "You would typically use tools like Ansible, Kubernetes, or simple SSH commands here"
   only:
     - main
