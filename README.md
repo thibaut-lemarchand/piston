@@ -52,8 +52,8 @@ For detailed unit testing, refer to the individual modules and components within
 Distributed under the MIT License. See `LICENSE` for more information.
 
 ## Contact
-Your Name - [your_email@example.com](mailto:your_email@example.com)
-Project Link: [https://github.com/your-repo/piston](https://github.com/your-repo/piston)
+Thibaut L. - [github@tlemarchand.com](mailto:github@tlemarchand.com)
+Project Link: [https://github.com/thibaut-lemarchand/piston](https://github.com/thibaut-lemarchand/piston)
 
 ---
 
