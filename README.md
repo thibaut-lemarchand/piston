@@ -55,7 +55,3 @@ Distributed under the MIT License. See `LICENSE` for more information.
 Thibaut L. - [github@tlemarchand.com](mailto:github@tlemarchand.com)
 
 Project Link: [https://github.com/thibaut-lemarchand/piston](https://github.com/thibaut-lemarchand/piston)
-
----
-
-This README provides a general overview of the project, including how to get started and run tests. The integration tests section mentions that they exist for verifying the application's core functionalities without delving into specific code snippets.
