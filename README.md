@@ -53,6 +53,7 @@ Distributed under the MIT License. See `LICENSE` for more information.
 
 ## Contact
 Thibaut L. - [github@tlemarchand.com](mailto:github@tlemarchand.com)
+
 Project Link: [https://github.com/thibaut-lemarchand/piston](https://github.com/thibaut-lemarchand/piston)
 
 ---
